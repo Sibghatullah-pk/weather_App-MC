@@ -4,11 +4,14 @@
 
 ## ✨ Features
 
+- 🔍 **Search weather by city name** (text input with search button)
 - 📍 Real-time location-based weather data
 - 🌡️ Current temperature with feels-like, humidity, wind speed
 - 🌅 Sunrise and sunset times
 - ⏰ 12-hour forecast
 - 📅 5-day weather forecast
+- 💾 **Saves last searched city** (automatically loads on app restart)
+- 🚨 Error handling for city not found & no internet
 - 🎨 Dynamic theme based on weather conditions
 - 🔄 Pull to refresh functionality
 - 📱 Works on Android, iOS, and Web
@@ -98,17 +101,40 @@ kiosk_weather_expo/
 - **Expo** - Development platform
 - **expo-location** - Location services
 - **expo-constants** - Environment variables
-- **OpenWeatherMap API** - Weather data
+- **@react-native-async-storage/async-storage** - Local storage for last searched city
+- **OpenWeatherMap API** - Weather data (current, forecast, air quality)
 
 ## 📱 Screenshots
 
-The app will show:
-1. **Splash Screen** - Loading animation
-2. **Header** - Location, time, date
-3. **Main Display** - Large temperature, weather icon, sunrise/sunset
-4. **Current Weather** - Wind, humidity, air quality cards
-5. **Hourly Forecast** - Next 12 hours (horizontal scroll)
-6. **5-Day Forecast** - Week overview
+### How to Capture Screenshots:
+1. Run the app: `npm start` then press `a` for Android or `i` for iOS
+2. Take screenshots of the following screens:
+   - **Main screen** with current weather (showing temperature, conditions, wind, humidity)
+   - **5-Day Forecast** screen (scroll down to show forecast)
+   - **Error screen** (turn off internet or search for invalid city like "zzzzz")
+   - **Search feature** (tap search icon and show city search input)
+3. Save screenshots to `screenshots/` folder with descriptive names
+4. Add screenshots below:
+
+### Required Screenshots:
+
+#### 1. Main Weather Screen
+![Main Screen](screenshots/main-screen.png)
+*Shows current temperature, weather conditions, wind speed, humidity, and location*
+
+#### 2. 5-Day Forecast
+![Forecast Screen](screenshots/forecast-screen.png)
+*Displays 5-day weather forecast with temperatures and conditions*
+
+#### 3. City Search Feature
+![Search Feature](screenshots/search-feature.png)
+*Text input for searching weather by city name*
+
+#### 4. Error/No Network Screen
+![Error Screen](screenshots/error-screen.png)
+*Shows error handling when city not found or no internet connection*
+
+> **Note:** Please capture and add your actual screenshots to the `screenshots/` folder before submission.
 
 ## 🐛 Troubleshooting
 
@@ -118,6 +144,8 @@ The app will show:
 | Location permission denied | Allow location in phone settings |
 | Expo Go won't connect | Ensure phone & PC on same WiFi |
 | White screen | Check terminal for errors |
+| "City not found" | Check spelling or try another city name |
+| Last city not loading | Clear app data and search again |
 
 ## 🎨 Customization
 
@@ -149,6 +177,25 @@ expo build:ios
 eas build --platform all
 ```
 
+## 📦 Creating Submission ZIP
+
+To create a ZIP file for submission (excluding node_modules):
+
+### Windows (PowerShell):
+```powershell
+# Navigate to parent directory
+cd "s:\MBLE CMP"
+
+# Create ZIP (requires 7-Zip or compress utility)
+Compress-Archive -Path "weather_App-MC\*" -DestinationPath "weather_App-MC.zip" -Force -CompressionLevel Optimal
+```
+
+### Or manually:
+1. Copy the entire `weather_App-MC` folder
+2. Delete the `node_modules/` and `.expo/` folders from the copy
+3. Zip the remaining files
+4. Ensure ZIP includes: `src/`, `assets/`, `package.json`, `README.md`, `App.js`, etc.
+
 ## 🔗 Links
 
 - OpenWeather API: https://openweathermap.org/api
@@ -157,4 +204,3 @@ eas build --platform all
 
 ---
 
-**Converted from Web to React Native Expo** • Built with ❤️

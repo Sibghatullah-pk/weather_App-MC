@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatTime, formatDate } from '../helpers/weatherHelpers';
 
 const WeatherContext = createContext();
@@ -32,15 +33,27 @@ export const WeatherProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [coords, setCoords] = useState(null);
+    const [lastCity, setLastCity] = useState(null);
 
     useEffect(() => {
         const t = setInterval(() => setNow(new Date()), 60000);
         return () => clearInterval(t);
     }, []);
 
-    // Request location permission with Expo Location
+    // Load last searched city on mount
     useEffect(() => {
         (async () => {
+            try {
+                const savedCity = await AsyncStorage.getItem('lastSearchedCity');
+                if (savedCity) {
+                    setLastCity(savedCity);
+                    await fetchByCityName(savedCity);
+                    return;
+                }
+            } catch (err) {
+                console.log('Error loading last city:', err);
+            }
+            // If no saved city, request location
             try {
                 const { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
@@ -157,10 +170,88 @@ export const WeatherProvider = ({ children }) => {
     }, [deriveTheme]);
 
     useEffect(() => {
-        if (coords) {
+        if (coords && !lastCity) {
             fetchWeather(coords.lat, coords.lon);
         }
-    }, [coords, fetchWeather]);
+    }, [coords, fetchWeather, lastCity]);
+
+    const fetchByCityName = useCallback(async (cityName) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const apiKey = Constants?.expoConfig?.extra?.VITE_OPENWEATHER_API_KEY || '';
+            if (!apiKey) throw new Error('Missing OpenWeather API key');
+
+            // Fetch weather by city name
+            const params = `q=${encodeURIComponent(cityName)}&units=metric&appid=${apiKey}`;
+            const [currentRes, forecastRes] = await Promise.all([
+                fetch(`https://api.openweathermap.org/data/2.5/weather?${params}`),
+                fetch(`https://api.openweathermap.org/data/2.5/forecast?${params}`)
+            ]);
+
+            if (!currentRes.ok) {
+                throw new Error('City not found. Please check spelling.');
+            }
+            if (!forecastRes.ok) throw new Error('Forecast fetch failed');
+
+            const current = await currentRes.json();
+            const forecast = await forecastRes.json();
+
+            // Fetch air quality using coordinates from city
+            const lat = current.coord.lat;
+            const lon = current.coord.lon;
+            let airJson = null;
+            try {
+                const airRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+                airJson = airRes.ok ? await airRes.json() : null;
+            } catch { }
+
+            const sunrise = current.sys?.sunrise * 1000;
+            const sunset = current.sys?.sunset * 1000;
+            const dt = current.dt * 1000;
+            const derivedTheme = deriveTheme(current.weather[0].main, dt, sunrise, sunset);
+            setTheme(derivedTheme);
+
+            const aqiMap = { 1: 'Good', 2: 'Fair', 3: 'Moderate', 4: 'Poor', 5: 'Very Poor' };
+            const aqi = airJson?.list?.[0]?.main?.aqi;
+
+            const shaped = {
+                current: {
+                    temperature: Math.round(current.main.temp),
+                    feelsLike: Math.round(current.main.feels_like),
+                    humidity: current.main.humidity,
+                    windSpeed: Math.round(current.wind.speed * 3.6),
+                    condition: derivedTheme,
+                    pressure: current.main.pressure,
+                    uv: '--',
+                    airQuality: aqi ? aqiMap[aqi] : 'Unknown'
+                },
+                forecast: {
+                    hourly: buildHourly(forecast.list),
+                    daily: buildDaily(forecast.list)
+                },
+                location: {
+                    city: current.name || 'Unknown',
+                    country: current.sys?.country || '',
+                    full: `${current.name}, ${current.sys?.country || ''}`.trim()
+                },
+                astronomy: {
+                    sunrise: new Date(sunrise).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    sunset: new Date(sunset).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                }
+            };
+            setData(shaped);
+
+            // Save city to AsyncStorage
+            await AsyncStorage.setItem('lastSearchedCity', cityName);
+            setLastCity(cityName);
+        } catch (err) {
+            setError(err.message || 'Failed to fetch weather for this city');
+        } finally {
+            setLoading(false);
+            setShowSplash(false);
+        }
+    }, [deriveTheme, buildHourly, buildDaily]);
 
     const value = useMemo(() => ({
         data,
@@ -174,11 +265,12 @@ export const WeatherProvider = ({ children }) => {
         loading,
         error,
         refresh: () => coords && fetchWeather(coords.lat, coords.lon),
+        searchCity: fetchByCityName,
         location: data.location,
         weather: data.current,
         hourlyForecast: data.forecast?.hourly || [],
         dailyForecast: data.forecast?.daily || []
-    }), [data, theme, now, showSplash, loading, error, coords, fetchWeather]);
+    }), [data, theme, now, showSplash, loading, error, coords, fetchWeather, fetchByCityName]);
 
     return <WeatherContext.Provider value={value}>{children}</WeatherContext.Provider>;
 };

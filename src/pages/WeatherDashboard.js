@@ -7,13 +7,19 @@ import MainWeatherDisplay from '../components/MainWeatherDisplay';
 import HourlyForecast from '../components/HourlyForecast';
 import FiveDayForecast from '../components/FiveDayForecast';
 import SplashScreen from '../components/SplashScreen';
+import ErrorScreen from '../components/ErrorScreen';
 
 const { width } = Dimensions.get('window');
 
 const WeatherDashboard = () => {
-    const { themeConfig, theme, showSplash, error, refresh } = useWeather();
+    const { themeConfig, theme, showSplash, error, refresh, loading, data } = useWeather();
 
     if (showSplash) return <SplashScreen />;
+
+    // Show full error screen if there's a critical error and no data
+    if (error && !data?.current?.temperature && !loading) {
+        return <ErrorScreen error={error} onRetry={refresh} />;
+    }
 
     const getGradientColors = (theme) => {
         switch (theme) {
