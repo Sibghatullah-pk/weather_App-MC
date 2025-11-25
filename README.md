@@ -149,25 +149,6 @@ expo build:ios
 eas build --platform all
 ```
 
-## 📦 Creating Submission ZIP
-
-To create a ZIP file for submission (excluding node_modules):
-
-### Windows (PowerShell):
-```powershell
-# Navigate to parent directory
-cd "s:\MBLE CMP"
-
-# Create ZIP (requires 7-Zip or compress utility)
-Compress-Archive -Path "weather_App-MC\*" -DestinationPath "weather_App-MC.zip" -Force -CompressionLevel Optimal
-```
-
-### Or manually:
-1. Copy the entire `weather_App-MC` folder
-2. Delete the `node_modules/` and `.expo/` folders from the copy
-3. Zip the remaining files
-4. Ensure ZIP includes: `src/`, `assets/`, `package.json`, `README.md`, `App.js`, etc.
-
 ## 🔗 Links
 
 - OpenWeather API: https://openweathermap.org/api
