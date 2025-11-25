@@ -85,17 +85,8 @@ kiosk_weather_expo/
 
 ## 📱 Screenshots
 
-### How to Capture Screenshots:
-1. Run the app: `npm start` then press `a` for Android or `i` for iOS
-2. Take screenshots of the following screens:
-   - **Main screen** with current weather (showing temperature, conditions, wind, humidity)
-   - **5-Day Forecast** screen (scroll down to show forecast)
-   - **Error screen** (turn off internet or search for invalid city like "zzzzz")
-   - **Search feature** (tap search icon and show city search input)
-3. Save screenshots to `screenshots/` folder with descriptive names
-4. Add screenshots below:
 
-### Required Screenshots:
+### Screenshots:
 
 #### 1. Main Weather Screen
 ![Main Screen](screenshots/main-screen.jpeg)
