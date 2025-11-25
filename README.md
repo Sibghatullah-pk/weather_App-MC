@@ -25,7 +25,7 @@
 
 ### Step 1: Install Dependencies
 ```bash
-cd "s:\MBLE CMP\weather_Siber - Copy\KoiskWebApp\kiosk_weather_expo"
+cd "s:\MBLE CMP\kiosk_weather_expo"
 npm install
 ```
 
@@ -73,27 +73,6 @@ kiosk_weather_expo/
         └── weatherHelpers.js   # Utility functions
 ```
 
-## 🔄 Conversion Details
-
-### Web → React Native
-
-| Web | React Native |
-|-----|--------------|
-| `<div>` | `<View>` |
-| `<p>`, `<h1>`, `<span>` | `<Text>` |
-| CSS files | `StyleSheet.create()` |
-| `navigator.geolocation` | `expo-location` |
-| `import.meta.env` | `expo-constants` |
-| Scrollable div | `<ScrollView>` |
-| FontAwesome icons | Emoji icons |
-
-### Key Changes
-✅ All HTML elements → React Native components  
-✅ CSS → StyleSheet API  
-✅ Browser geolocation → Expo Location  
-✅ Vite env → Expo Constants  
-✅ Responsive web design → Mobile-first design  
-✅ Mouse events → Touch events  
 
 ## 🛠️ Technology Stack
 
@@ -119,22 +98,24 @@ kiosk_weather_expo/
 ### Required Screenshots:
 
 #### 1. Main Weather Screen
-![Main Screen](screenshots/main-screen.png)
+![Main Screen](screenshots/main-screen.jpeg)
 *Shows current temperature, weather conditions, wind speed, humidity, and location*
 
 #### 2. 5-Day Forecast
-![Forecast Screen](screenshots/forecast-screen.png)
+![Forecast Screen](screenshots/forecast-screen.jpeg)
 *Displays 5-day weather forecast with temperatures and conditions*
 
 #### 3. City Search Feature
-![Search Feature](screenshots/search-feature.png)
+![Search Feature](screenshots/search-feature.jpeg)
 *Text input for searching weather by city name*
 
 #### 4. Error/No Network Screen
-![Error Screen](screenshots/error-screen.png)
+![Error Screen](screenshots/error-screen.jpeg)
 *Shows error handling when city not found or no internet connection*
+#### 4. Diffrent Location/Day Screen
+![Error Screen](screenshots/Day.jpeg)
+*Shows error handling when its day time  or night*
 
-> **Note:** Please capture and add your actual screenshots to the `screenshots/` folder before submission.
 
 ## 🐛 Troubleshooting
 
